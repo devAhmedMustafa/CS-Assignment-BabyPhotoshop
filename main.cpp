@@ -1,16 +1,16 @@
 #include <cmath>
+#include <regex>
 #include "Image_Class.h"
 using namespace std;
 
-void InvertFilter(std::string filename);
-void Rotate(std::string filename, int angle);
+void InvertFilter(Image& image);
+void Rotate(Image& image, int angle);
 void grayScale_filter(Image& image);
 void verticalFlip(Image& image);
 void horizontalFlip(Image& image);
 void Black_and_White(Image& image);
 
-int main() {
-
+void Menu(){
     cout << "Welcome to our baby photoshop program!\n";
     int choice, filter_choice, flip_choice, save_choice, file_choice;
     string new_filename;
@@ -23,10 +23,25 @@ int main() {
         switch (choice) {
             case 1: {
                 string filename;
-                cout << "Upload your image: ";
-                cin >> filename;
-                Image image(filename);
 
+                Image image;
+
+                // Upload Image
+                while(true){
+                    try{
+                        cout << "Upload your image: ";
+                        cin >> filename;
+
+                        image.loadNewImage(filename);
+                        break;
+                    }
+                    catch (...) {
+
+                    }
+                }
+                // End Upload
+
+                // Choose Filters
                 while (true) {
                     cout << "Choose the filter you want to apply:\n"
                             "1) Gray Scale filter\n"
@@ -59,44 +74,85 @@ int main() {
                             }
                             break;
                         case 4:
-                            // invert function
+                            InvertFilter(image);
                             break;
                         case 5:
-                            // rotate function
+                            while(true){
+                                cout << "Enter Rotate Angle: " << endl;
+                                cout << "1) 90 deg" << endl;
+                                cout << "2) 180 deg" << endl;
+                                cout << "3) 270 deg" << endl;
+
+                                int choice;
+                                int angle = 0;
+                                cin >> choice;
+
+                                if (choice == 1)
+                                    angle = 90;
+                                else if (choice == 2)
+                                    angle = 180;
+                                else if (choice == 3)
+                                    angle = 270;
+                                else{
+                                    cout << "Invalid Choice!" << endl;
+                                    continue;
+                                }
+
+                                Rotate(image, angle);
+                                break;
+                            }
                             break;
                         default:
                             cout << "Invalid filter choice! Please try again.\n";
+                            continue;
                     }
-                    cout << "Do you want to apply another filter?\n"
-                            "1) Yes!\n"
-                            "2) No, save the file\n";
-                    cin >> save_choice;
+
+                    // Filters Combinations
+                    while (true){
+                        cout << "Do you want to apply another filter?\n"
+                                "1) Yes!\n"
+                                "2) No, save the file\n";
+                        cin >> save_choice;
+
+                        if (save_choice != 1 && save_choice != 2){
+                            cout << "Invalid Choice!" << endl;
+                            continue;
+                        }
+                        break;
+                    }
+
 
                     if (save_choice == 1)
                         continue;
                     if (save_choice == 2)
                         break;
+
                 }
+                // End Choose Filters
+
+                // Saving Options
                 while (true){
-                cout << "Save the image:\n"
-                        "1) In the same file\n"
-                        "2) In a new file\n";
-                cin >> file_choice;
-                switch (file_choice) {
-                    case 1:
-                        image.saveImage(filename);
-                        break;
-                    case 2:
-                        cout << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
-                        cin >> new_filename;
-                        image.saveImage(new_filename);
-                        break;
-                    default:
-                        cout << "Invalid choice!\n";
-                        continue;
+                    cout << "Save the image:\n"
+                            "1) In the same file\n"
+                            "2) In a new file\n";
+                    cin >> file_choice;
+                    switch (file_choice) {
+                        case 1:
+                            image.saveImage(filename);
+                            break;
+                        case 2:
+                            cout << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
+                            cin >> new_filename;
+                            image.saveImage(new_filename);
+                            break;
+                        default:
+                            cout << "Invalid choice!\n";
+                            continue;
+                    }
+                    break;
                 }
-                break;
-                }
+                // End Saving Options
+
                 break;
             }
             case 2:
@@ -106,13 +162,15 @@ int main() {
                 cout << "Invalid choice!\n";
         }
     } while (choice != 2);
+}
 
+int main() {
+
+    Menu();
     return 0;
 }
 
-void InvertFilter(std::string filename){
-
-    Image image(filename);
+void InvertFilter(Image& image){
 
     for (int i = 0; i < image.width; ++i){
         for (int j = 0; j < image.height; ++j){
@@ -124,19 +182,15 @@ void InvertFilter(std::string filename){
         }
     }
 
-    image.saveImage("inverted.png");
-
 }
 
-void Rotate(std::string filename, int angle){
-
-    Image image(filename);
+void Rotate(Image& image, int angle){
 
     if (angle == 0)
         return;
 
     int shiftW, shiftH;
-    bool changeDim = angle != 180;
+    bool changeDim = (angle != 180);
 
     Image rotated( changeDim?image.height:image.width, changeDim?image.width:image.height);
 
@@ -160,7 +214,7 @@ void Rotate(std::string filename, int angle){
         }
     }
 
-    rotated.saveImage("rotated.png");
+    image.ChangeImageData(rotated);
 
 }
 
