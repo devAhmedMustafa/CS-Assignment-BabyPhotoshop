@@ -26,7 +26,7 @@ int main() {
                 cout << "Upload your image: ";
                 cin >> filename;
                 Image image(filename);
-                
+
                 while (true) {
                     cout << "Choose the filter you want to apply:\n"
                             "1) Gray Scale filter\n"
@@ -68,25 +68,34 @@ int main() {
                             cout << "Invalid filter choice! Please try again.\n";
                     }
                     cout << "Do you want to apply another filter?\n"
-                            "1) Yes\n"
-                            "2) No\n";
+                            "1) Yes!\n"
+                            "2) No, save the file\n";
                     cin >> save_choice;
+
                     if (save_choice == 1)
                         continue;
                     if (save_choice == 2)
                         break;
                 }
+                while (true){
                 cout << "Save the image:\n"
                         "1) In the same file\n"
                         "2) In a new file\n";
                 cin >> file_choice;
-
-                if (file_choice == 1)
-                    image.saveImage(filename);
-                if (file_choice == 2){
-                    cout << "Enter the new file name: ";
-                    cin >> new_filename;
-                    image.saveImage(new_filename);
+                switch (file_choice) {
+                    case 1:
+                        image.saveImage(filename);
+                        break;
+                    case 2:
+                        cout << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
+                        cin >> new_filename;
+                        image.saveImage(new_filename);
+                        break;
+                    default:
+                        cout << "Invalid choice!\n";
+                        continue;
+                }
+                break;
                 }
                 break;
             }
