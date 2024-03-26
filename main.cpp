@@ -141,9 +141,18 @@ void Menu(){
                             image.saveImage(filename);
                             break;
                         case 2:
-                            cout << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
-                            cin >> new_filename;
-                            image.saveImage(new_filename);
+
+                            while(true){
+
+                                try{
+                                    cout << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
+                                    cin >> new_filename;
+                                    image.saveImage(new_filename);
+                                    break;
+                                }
+                                catch (...) {}
+                            }
+
                             break;
                         default:
                             cout << "Invalid choice!\n";
