@@ -248,19 +248,6 @@ public:
         imageData[(y * width + x) * channels + c] = value;
     }
 
-    void ChangeImageData(Image& newImage){
-        width = newImage.width;
-        height = newImage.height;
-
-        for (int i = 0; i < width; i++){
-            for (int j = 0; j < height; j++){
-                for (int k = 0; k < 3; k++){
-                    setPixel(i, j, k, newImage(i, j, k));
-                }
-            }
-        }
-    }
-
     /**
      * @brief Overloaded function call operator to access pixels.
      *
