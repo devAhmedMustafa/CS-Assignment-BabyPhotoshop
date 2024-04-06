@@ -7,8 +7,9 @@
 
 
 #include <cmath>
-#include <regex>
+#include "Utilities.h"
 #include "Image_Class.h"
+#include <vector>
 using namespace std;
 
 void InvertFilter(Image& image);
@@ -18,6 +19,9 @@ void verticalFlip(Image& image);
 void horizontalFlip(Image& image);
 void Black_and_White(Image& image);
 void ChangeImageData(Image& actual, Image& newImage);
+void BlurFilter(Image& image, int r);
+void AddFrame(Image& image);
+void Resize(Image&, int, int);
 
 void Menu(){
     cout << "Welcome to our baby photoshop program!\n";
@@ -184,8 +188,82 @@ void Menu(){
 
 int main() {
 
-    Menu();
+    Image image("sk.png");
+
+    AddFrame(image);
+
+    //Menu();
     return 0;
+}
+
+void AddFrame(Image& image){
+
+    int blueColor[] = {0, 0, 200};
+
+    Image frame("Frames Patterns/1.png");
+
+    if (frame.width > image.width){
+
+    }
+
+    for (int i = 0; i < image.width; i++){
+        for (int j = 0; j < image.height; j++){
+
+            for (int k = 0; k < 3; k++){
+
+
+
+            }
+
+        }
+
+    }
+
+    for (int i = 0; i < image.width; i++){
+        for (int j = 0; j < image.height; j++){
+
+            for (int k = 0; k < 3; k++){
+
+                image(i, j, k) = blueColor[k];
+
+            }
+
+        }
+
+    }
+
+}
+
+void Resize(Image& image, int x, int y){
+
+    float xFactor = round( (float) image.width / (float) x);
+    float yFactor = round( (float) image.height / (float) y);
+
+    Image resized(x, y);
+
+}
+
+void BlurFilter(Image& image, int r){
+
+    int area = pow(2*r+1, 2);
+
+    for (int i = r; i < image.width-r; i++){
+        for (int j = r; j < image.height-r; j++){
+            for (int k = 0; k < 3; k++){
+
+                int sum = 0;
+
+                for (int p = i-r; p <= i+r; p++){
+                    for (int c = j-r; c <= j+r; c++){
+                        sum += image(p, c, k);
+                    }
+                }
+
+                image(i, j, k) = ceil(sum / area);
+            }
+        }
+    }
+
 }
 
 void InvertFilter(Image& image){
@@ -265,6 +343,7 @@ void verticalFlip(Image& image) {
         }
     }
 }
+
 void horizontalFlip(Image& image) {
     for (int i = 0; i < image.width / 2; ++i)
     {

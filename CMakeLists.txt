@@ -3,4 +3,4 @@ project(BabyPhotoshop)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(BabyPhotoshop main.cpp)
+add_executable(BabyPhotoshop main.cpp Utilities.h Utilities.cpp)
