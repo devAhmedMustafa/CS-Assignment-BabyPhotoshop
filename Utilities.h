@@ -7,6 +7,7 @@ namespace Utilities{
     double StandardDeviation(Image& );
     double Mean(Image& );
     void ChangeImageData(Image& actual, Image& newImage);
+    void MakeCircle(int**, int);
 
     void ChangeImageData(Image& actual, Image& newImage){
         actual.width = newImage.width;
@@ -64,6 +65,17 @@ namespace Utilities{
 
         return avg / (image.width*image.height);
     }
+
+    void MakeCircle(int** matrix, int radius){
+        for (int i = 0; i <= radius*2; i++) {
+            for (int j = 0; j <= radius*2; j++) {
+                if (round(sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius))) == radius) {
+                    matrix[i][j] = 1;
+                }
+            }
+        }
+    }
+
 }
 
 #endif //BABYPHOTOSHOP_UTILITIES_H

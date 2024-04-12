@@ -6,6 +6,7 @@
 //System Diagram: https://drive.google.com/file/d/16WMEV3cS-93c3tAiAGDeK93r_W2lyStY/view?usp=sharing
 
 #include "Filters.h"
+#include "Utilities.h"
 using namespace std;
 using namespace Filters;
 
@@ -174,9 +175,9 @@ void Menu(){
 
 int main() {
 
-    Image image("Raw Images/gojo.jpg");
-    Bloom(image, 0.5, 30);
-    image.saveImage("Bloomed.png");
+    Image image("Raw Images/sukuna.jpg");
+    AddFancyFrame(image, 20, new int[3] {156,29,26}, new int[3]{240,230,100});
+    image.saveImage("framed.png");
 
     //Menu();
     return 0;

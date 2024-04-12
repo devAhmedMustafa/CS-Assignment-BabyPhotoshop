@@ -24,14 +24,103 @@ namespace Filters {
     void Noise(Image&, float power);
     void Oil(Image&,int, int);
     void Bloom(Image& , double, double);
-    void infrared_filter(Image& image);
-    void merge_filter(Image& image1, Image& image2);
-    void purple_filter(Image& image);
-    void sunlight_filter(Image& image);
-    void darken_filter(Image& image);
-    void brighten_filter(Image& image);
-    void detect_edge(Image& image);
-    
+    void AddBorder(Image&, int , int , int , int, const int[]);
+    void DrawMatrix(Image&, int**, int, int, int, const int [], int, int);
+    void DrawFancyFrame(Image&, int**, int, int, const int[], int, int);
+    void AddBasicFrame(Image&, int , const int [], int , int);
+    void AddLinedFrame(Image&, int, const int[], const int[]);
+    void AddFancyFrame(Image&, int, const int[], const int[]);
+
+    void AddBorder(Image& image, int xo, int xf, int yo, int yf, const int color[]){
+        if (xo > xf)
+            std::swap(xo, xf);
+        if(yo > yf)
+            std::swap(yo, yf);
+
+        for (int i = xo; i < xf; i++){
+            for (int j = yo; j < yf; j++){
+                for (int k = 0; k < 3; k++){
+                    image(i, j, k) = color[k];
+                }
+            }
+        }
+    }
+    void AddBasicFrame(Image& image, int thickness, const int color[], int xo = 0, int yo = 0){
+        AddBorder(image, xo, image.width-xo, yo, thickness+yo, color);
+        AddBorder(image, xo, image.width-xo, image.height-1-yo, image.height-thickness-yo, color);
+        AddBorder(image, xo, thickness+xo, yo, image.height-yo, color);
+        AddBorder(image, image.width-1-xo, image.width-thickness-xo, yo, image.height-yo, color);
+    }
+    void AddLinedFrame(Image& image, int thickness, const int color[], const int minorColor[]){
+        AddBasicFrame(image, thickness, color);
+
+        int whiteOutlineThickness = thickness / 6;
+
+        AddBasicFrame(image, whiteOutlineThickness, minorColor, thickness, thickness);
+        AddBasicFrame(image, whiteOutlineThickness, minorColor, thickness*1.5, thickness*1.5);
+
+    }
+    void DrawMatrix(Image& image, int** matrix, int rows, int cols, int thickness, const int color[], int xo = 0, int yo = 0){
+
+        int dx = 1, dy = 1;
+        if (xo > image.width/2)
+            dx = -1;
+        if (yo > image.height/2)
+            dy = -1;
+
+        for (int i = 0; abs(i) < rows*thickness; i++){
+            for (int j = 0; abs(j) < cols*thickness; j++){
+
+                if (!matrix[(int)(j/thickness)][(int)(i/thickness)])
+                    continue;
+
+                for (int k = 0; k < 3; k++){
+                    image(dx*i+xo, dy*j+yo, k) = color[k];
+                }
+
+            }
+
+        }
+    }
+    void DrawFancyFrame(Image& image, int** matrix, int rows, int cols, int thickness, const int color[], int xo = 0, int yo = 0){
+        DrawMatrix(image, matrix, rows, cols, thickness, color, xo, yo);
+        DrawMatrix(image, matrix, rows, cols, thickness, color, image.width-1-xo, yo);
+        DrawMatrix(image, matrix, rows, cols, thickness, color, xo, image.height-1-yo);
+        DrawMatrix(image, matrix, rows, cols, thickness, color, image.width-1-xo, image.height-1-yo);
+    }
+    void AddFancyFrame(Image& image, int thickness, const int color[], const int minorColor[]){
+        AddBasicFrame(image, thickness, color);
+        AddBasicFrame(image, thickness/6, minorColor, thickness*1.5, thickness*1.5);
+        AddBasicFrame(image, thickness/8, minorColor, thickness/2, thickness/2);
+
+        int** square = new int*[2];
+        square[0] = new int[] {1,1};
+        square[1] = new int[] {1,1};
+
+        int** hollowSquare = new int*[4];
+        hollowSquare[0] = new int[] {0,0,0,1};
+        hollowSquare[1] = new int[] {0,0,0,1};
+        hollowSquare[2] = new int[] {0,0,0,1};
+        hollowSquare[3] = new int[] {1,1,1,1};
+
+        int** circle = new int*[11];
+        for (int i = 0; i < 11; i++){
+            circle[i] = new int[11] {0};
+        }
+        MakeCircle(circle, 5);
+
+        int filledSquareThickness = thickness/4;
+        int hollowSquareThickness = thickness/2;
+        int circleThickness = thickness/10;
+
+        DrawFancyFrame(image, square, 2, 2, filledSquareThickness, minorColor, thickness, thickness);
+        DrawFancyFrame(image, hollowSquare, 4, 4, hollowSquareThickness, minorColor, thickness, thickness);
+        DrawFancyFrame(image, hollowSquare, 4, 4, hollowSquareThickness/2, minorColor, thickness, thickness);
+        DrawFancyFrame(image, circle, 11, 11, circleThickness, minorColor, thickness*1.5+1, hollowSquareThickness*4+thickness);
+        DrawFancyFrame(image, circle, 11, 11, circleThickness, minorColor, hollowSquareThickness*4+thickness, thickness*1.5+1);
+
+    }
+
     void Bloom(Image& image, double intensity, double threshold){
 
         int full = image.width*image.height;
@@ -343,147 +432,6 @@ namespace Filters {
                     image.setPixel(i, j, 0, 0);
                     image.setPixel(i, j, 1, 0);
                     image.setPixel(i, j, 2, 0);
-                }
-            }
-        }
-    }
-
-    void infrared_filter(Image& image){
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                image(i, j, 0) = min(image(i, j, 0) * 55.0, 255.0);
-                image(i, j, 2) = 255 - image(i, j, 2);
-                image(i, j, 1) = 255 - image(i, j, 1);
-            }
-        }
-    }
-
-    void merge_filter(Image& image1, Image& image2){
-        int width1 = image1.width , height1 = image1.height;
-        int width2 = image2.width , height2 = image2.height;
-    
-        if (width1 == width2 && height1 != height2){
-            height1 = min(height1,height2);
-        }
-        if (width1 != width2 && height1 == height2){
-            width1 = min(width1,width2);
-        }
-        if (width1 != width2 && height1 != height2){
-            width1 = min(width1,width2);
-            height1 = min(height1,height2);
-        }
-    
-        image1.width = width1;
-        image1.height = height1;
-    
-        for (int i = 0; i < image1.width; ++i) {
-            for (int j = 0; j < image1.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-    
-                    image1(i,j,k) = (image1(i,j,k)+image2(i,j,k))/2;
-                }
-            }
-        }
-    }
-
-    void purple_filter(Image& image){
-            for (int i = 0; i < image.width; ++i) {
-                for (int j = 0; j < image.height; ++j) {
-                    image(i, j, 0) = min(image(i, j, 0) * 1.141, 255.0);
-                    image(i, j, 2) = min(image(i, j, 2) * 1.26, 255.0);
-                    image(i, j, 1) = min(image(i, j, 1) * 0.805, 255.0);
-                }
-            }
-    }
-
-    void sunlight_filter(Image& image){
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    image(i,j,k) = min(image(i,j,k)*0.95,255.0);
-                }
-                image(i, j, 0) = min(image(i, j, 0) + 55.0, 255.0);
-                image(i, j, 1) = min(image(i, j, 1) + 50.0, 255.0);
-            }
-        }
-    }
-
-    void brighten_filter(Image& image){
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    image(i,j,k) = min(image(i,j,k)*1.5,255.0);
-    
-                }
-            }
-        }
-    }
-    
-    void darken_filter(Image& image){
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    image(i,j,k) *= 0.5;
-                }
-            }
-        }
-    }
-
-    void detect_edge(Image& image) {
-        int horizontal[3][3] = {{-1, 0 ,1},
-                                {-2, 0, 2},
-                                {-1, 0 , 1}};
-    
-        int vertical[3][3] = {{-1, -2, -1},
-                              {0, 0 ,0},
-                              {1, 2, 1}} ;
-    
-        Image gradient(image.width, image.height);
-    
-        for (int i = 1; i < image.width -1; ++i) {
-            for (int j = 1; j < image.height; ++j) {
-                int horizontal_gradient[3] = {0, 0, 0};
-                for (int di = -1; di <= 1 ; ++di) {
-                    for (int dj = -1; dj <= 1 ; ++dj) {
-                        for (int k = 0; k < 3; ++k) {
-                            horizontal_gradient[k] += image(i + di, j + dj, k) * horizontal[di+1][dj+1];
-                        }
-                    }
-                }
-    
-                int vertical_gradient[3] = {0, 0, 0};
-                for (int di = -1; di <= 1 ; ++di) {
-                    for (int dj = -1; dj <= 1 ; ++dj) {
-                        for (int k = 0; k < 3; ++k) {
-                            vertical_gradient[k] += image(i + di, j + dj, k) * vertical[di+1][dj+1];
-                        }
-                    }
-                }
-    
-                int gradientMagnitude = 0;
-                for (int k = 0; k < 3; ++k) {
-                    gradientMagnitude += horizontal_gradient[k] * horizontal_gradient[k] + vertical_gradient[k] * vertical_gradient[k];
-                }
-    
-                gradientMagnitude = sqrt(gradientMagnitude)/3;
-    
-                for (int k = 0; k < 3; ++k) {
-                    gradient(i, j, k) = gradientMagnitude;
-                }
-            }
-        }
-    
-        int threshold = 100;
-        for (int i = 0; i < image.width; ++i) {
-            for (int j = 0; j < image.height; ++j) {
-                if(gradient(i,j,0)> threshold){
-                    for (int k = 0; k < 3; ++k) {
-                        image(i, j, k) = 0;
-                    }
-                }else {
-                    for (int k = 0; k < 3; ++k) {
-                        image(i,j,k)= 255;
-                    }
                 }
             }
         }
