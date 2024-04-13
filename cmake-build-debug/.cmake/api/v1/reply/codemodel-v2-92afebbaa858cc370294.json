@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/am180/Desktop/CS112-Assignment/CS-Assignment-BabyPhotoshop/cmake-build-debug",
-		"source" : "C:/Users/am180/Desktop/CS112-Assignment/CS-Assignment-BabyPhotoshop"
+		"build" : "D:/FCAI - CU/Second term/CS-Assignment-BabyPhotoshop/cmake-build-debug",
+		"source" : "D:/FCAI - CU/Second term/CS-Assignment-BabyPhotoshop"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 4
+		"minor" : 6
 	}
 }

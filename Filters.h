@@ -292,7 +292,6 @@ namespace Filters {
                 }
             }
         }
-
     }
 
     void Resize(Image& originalImage, int newWidth, int newHeight) {
