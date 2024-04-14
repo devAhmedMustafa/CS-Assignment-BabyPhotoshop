@@ -294,7 +294,7 @@ namespace Filters {
         }
     }
 
-    void Resize(Image& originalImage, int newWidth, int newHeight) {
+    void Resize(Image& originalImage, int newWidth, int newHeight){
         if (newWidth <= 0 || newHeight <= 0) {
             cout << "Error: New dimensions must be positive.\n";
             return;
@@ -316,6 +316,7 @@ namespace Filters {
             }
         }
 
+        ChangeImageData(originalImage, resizedImage);
     }
 
     void InvertFilter(Image& image){
@@ -432,6 +433,180 @@ namespace Filters {
                     image.setPixel(i, j, 1, 0);
                     image.setPixel(i, j, 2, 0);
                 }
+            }
+        }
+    }
+
+    void brighten_filter(Image& image){
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    image(i,j,k) = min(image(i,j,k)*1.5,255.0);
+
+                }
+            }
+        }
+    }
+
+    void darken_filter(Image& image){
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    image(i,j,k) *= 0.5;
+                }
+            }
+        }
+    }
+
+    void merge_filter(Image& image1, Image& image2){
+        int width1 = image1.width , height1 = image1.height;
+        int width2 = image2.width , height2 = image2.height;
+
+        if (width1 == width2 && height1 != height2){
+            height1 = min(height1,height2);
+        }
+        if (width1 != width2 && height1 == height2){
+            width1 = min(width1,width2);
+        }
+        if (width1 != width2 && height1 != height2){
+            width1 = min(width1,width2);
+            height1 = min(height1,height2);
+        }
+
+        image1.width = width1;
+        image1.height = height1;
+
+        for (int i = 0; i < image1.width; ++i) {
+            for (int j = 0; j < image1.height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+
+                    image1(i,j,k) = (image1(i,j,k)+image2(i,j,k))/2;
+                }
+            }
+        }
+    }
+
+    void sunlight_filter(Image& image){
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    image(i,j,k) = min(image(i,j,k)*0.95,255.0);
+                }
+                image(i, j, 0) = min(image(i, j, 0) + 55.0, 255.0);
+                image(i, j, 1) = min(image(i, j, 1) + 50.0, 255.0);
+            }
+        }
+    }
+
+    void cropImage(Image& originalImage, int x, int y, int width, int height) {
+        if (x < 0 || y < 0 || x + width > originalImage.width || y + height > originalImage.height) {
+            cout << "Error: Cropping dimensions exceed image boundaries.\n";
+            return;
+        }
+
+        Image croppedImage(width, height);
+        for (int i = 0; i < width; ++i) {
+            for (int j = 0; j < height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    croppedImage.setPixel(i, j, k, originalImage.getPixel(x + i, y + j, k));
+                }
+            }
+        }
+
+        ChangeImageData(originalImage, croppedImage);
+    }
+
+    void detect_edge(Image& image) {
+        int horizontal[3][3] = {{-1, 0,1},
+                                {-2, 0, 2},
+                                {-1, 0, 1}};
+
+        int vertical[3][3] = {{-1, -2, -1},
+                              {0, 0,0},
+                              {1, 2, 1}} ;
+
+        Image gradient(image.width, image.height);
+
+        for (int i = 1; i < image.width -1; ++i) {
+            for (int j = 1; j < image.height; ++j) {
+                int horizontal_gradient[3] = {0, 0, 0};
+                for (int di = -1; di <= 1 ; ++di) {
+                    for (int dj = -1; dj <= 1 ; ++dj) {
+                        for (int k = 0; k < 3; ++k) {
+                            horizontal_gradient[k] += image(i + di, j + dj, k) * horizontal[di+1][dj+1];
+                        }
+                    }
+                }
+
+                int vertical_gradient[3] = {0, 0, 0};
+                for (int di = -1; di <= 1 ; ++di) {
+                    for (int dj = -1; dj <= 1 ; ++dj) {
+                        for (int k = 0; k < 3; ++k) {
+                            vertical_gradient[k] += image(i + di, j + dj, k) * vertical[di+1][dj+1];
+                        }
+                    }
+                }
+
+                int gradientMagnitude = 0;
+                for (int k = 0; k < 3; ++k) {
+                    gradientMagnitude += horizontal_gradient[k] * horizontal_gradient[k] + vertical_gradient[k] * vertical_gradient[k];
+                }
+
+                gradientMagnitude = sqrt(gradientMagnitude)/3;
+
+                for (int k = 0; k < 3; ++k) {
+                    gradient(i, j, k) = gradientMagnitude;
+                }
+            }
+        }
+
+        int threshold = 100;
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                if(gradient(i,j,0)> threshold){
+                    for (int k = 0; k < 3; ++k) {
+                        image(i, j, k) = 0;
+                    }
+                }else {
+                    for (int k = 0; k < 3; ++k) {
+                        image(i,j,k)= 255;
+                    }
+                }
+            }
+        }
+    }
+
+    void infrared_filter(Image& image){
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+
+                image(i, j, 0) = min(image(i, j, 0) * 55.0, 255.0);
+
+                image(i, j, 2) = 255 - image(i, j, 2);
+                image(i, j, 1) = 255 - image(i, j, 1);
+
+            }
+        }
+    }
+
+    void GammaFilter(Image& image, double gamma) {
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    double color = image(i, j, k) / 255.0;
+                    color = pow(color, gamma);
+                    image(i, j, k) = static_cast<int>(color * 255);
+                }
+            }
+        }
+    }
+
+    void purple_filter(Image& image){
+        for (int i = 0; i < image.width; ++i) {
+            for (int j = 0; j < image.height; ++j) {
+                image(i, j, 0) = min(image(i, j, 0) * 1.141, 255.0);
+                image(i, j, 2) = min(image(i, j, 2) * 1.26, 255.0);
+                image(i, j, 1) = min(image(i, j, 1) * 0.805, 255.0);
             }
         }
     }

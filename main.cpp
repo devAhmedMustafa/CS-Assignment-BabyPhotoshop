@@ -304,7 +304,8 @@ void Menu(){
 
                                                         try {
                                                             cout
-                                                                    << "Enter the new file name and write its extension (.jpg | .bmp | .jpeg | .png): ";
+                                                                  << "Enter the new file name and write its extension "
+                                                                     "(.jpg | .bmp | .jpeg | .png): ";
                                                             cin >> new_filename;
                                                             image.saveImage(new_filename);
                                                             cout << "The previous image saved successfully\n";
@@ -662,7 +663,7 @@ void BlurFilter(Image& image, int r){
     }
 }
 
-void Resize(Image& originalImage, int newWidth, int newHeight) {
+void Resize(Image& originalImage, int newWidth, int newHeight){
     if (newWidth <= 0 || newHeight <= 0) {
         cout << "Error: New dimensions must be positive.\n";
         return;
@@ -683,6 +684,8 @@ void Resize(Image& originalImage, int newWidth, int newHeight) {
             }
         }
     }
+
+    ChangeImageData(originalImage, resizedImage);
 }
 
 void InvertFilter(Image& image){
@@ -878,6 +881,8 @@ void cropImage(Image& originalImage, int x, int y, int width, int height) {
             }
         }
     }
+
+    ChangeImageData(originalImage, croppedImage);
 }
 
 void detect_edge(Image& image) {
