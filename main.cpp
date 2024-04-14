@@ -36,6 +36,7 @@ void detect_edge(Image& image);
 void infrared_filter(Image& image);
 void GammaFilter(Image& image, double gamma);
 void purple_filter(Image& image);
+void Skew(Image&, float );
 void filters_menu();
 
 void Menu(){
@@ -395,7 +396,9 @@ void Menu(){
 
 int main() {
 
-    Menu();
+    //Menu();
+    Image image("sukuna.jpg");
+    Skew(image, 60);
     return 0;
 
 }
@@ -978,6 +981,26 @@ void purple_filter(Image& image){
             image(i, j, 1) = min(image(i, j, 1) * 0.805, 255.0);
         }
     }
+}
+
+void Skew(Image& image, float angle){
+    angle = angle * M_1_PI/180;
+
+    int newWidth = image.width + image.height * sin(angle);
+    int newHeight = image.height * cos(angle);
+    Image skewedImage(newWidth, newHeight);
+
+    for (int i = 0; i < image.width; i++){
+        for (int j = 0; j < image.height; j++){
+            for (int k = 0; k < 3; k++){
+                int pj = (j) * cos(angle);
+                int pi = i + (j)*sin(angle);
+                skewedImage(pi, newHeight-pj-1, k) = image(i, image.height-j-1, k);
+            }
+        }
+    }
+
+    ChangeImageData(image, skewedImage);
 }
 
 void filters_menu(){
