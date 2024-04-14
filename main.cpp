@@ -180,7 +180,15 @@ void Menu(){
                             Resize(image, new_width, new_height);
                             break;
                         case 12:
-                            //blur
+                            int blur_radius;
+                            cout << "Enter the radius: ";
+                            cin >> blur_radius;
+
+                            while (blur_radius < 0 || blur_radius > 30){
+                                cout << "radius value must be between 0 and 30: ";
+                                cin >> blur_radius;
+                            }
+                            BlurFilter(image, blur_radius);
                             break;
                         case 13:
                             sunlight_filter(image);
@@ -204,7 +212,7 @@ void Menu(){
                             Oil(image, radius, intensity_level);
                             break;
                         case 15:
-                            infrared_filter(image);
+                            //
                             break;
                         case 16:
                             purple_filter(image);
