@@ -16,6 +16,7 @@ double StandardDeviation(Image& );
 double Mean(Image& );
 void ChangeImageData(Image& actual, Image& newImage);
 void MakeCircle(int**, int);
+void ChooseColor(int arr[]);
 
 void InvertFilter(Image& image);
 void Rotate(Image& image, int angle);
@@ -32,7 +33,7 @@ void Bloom(Image& , double, int);
 void AddBorder(Image&, int , int , int , int, const int[]);
 void DrawMatrix(Image&, int**, int, int, int, const int [], int, int);
 void DrawFancyFrame(Image&, int**, int, int, const int[], int, int);
-void AddBasicFrame(Image&, int , const int [], int , int);
+void AddBasicFrame(Image&, int , const int [], int, int);
 void AddLinedFrame(Image&, int, const int[], const int[]);
 void AddFancyFrame(Image&, int, const int[], const int[]);
 void merge_intersection(Image& image1, Image& image2);
@@ -86,15 +87,22 @@ void Menu(){
                     cin >> filter_choice;
 
                     switch (filter_choice) {
+#pragma region Grayscale
                         case 1:
                             grayScale_filter(image);
                             break;
+#pragma endregion
+#pragma region BlackAndWhite
                         case 2:
                             Black_and_White(image);
                             break;
+#pragma endregion
+#pragma region Invert
                         case 3:
                             InvertFilter(image);
                             break;
+#pragma endregion
+#pragma region Merge
                         case 4:
                             //Upload Image
                             while(true){
@@ -123,6 +131,8 @@ void Menu(){
                                     break;
                             }
                             break;
+#pragma endregion
+#pragma region Flip
                         case 5:
                             cout << "1) Horizontal flip\n"
                                  << "2) Vertical flip\n"
@@ -137,6 +147,8 @@ void Menu(){
                                     break;
                             }
                             break;
+#pragma endregion
+#pragma region Rotate
                         case 6:
                             while(true){
                                 cout << "Enter Rotate Angle: " << endl;
@@ -163,6 +175,8 @@ void Menu(){
                                 break;
                             }
                             break;
+#pragma endregion
+#pragma  region Light
                         case 7:
                             cout << "1) Darken\n"
                                     "2) Lighten\n"
@@ -177,6 +191,8 @@ void Menu(){
                                     break;
                             }
                             break;
+#pragma endregion
+#pragma region Crop
                         case 8:
                             int x, y, width, height;
                             cout << "Enter starting point (x, y) of the upper-left corner: ";
@@ -185,16 +201,17 @@ void Menu(){
                             cin >> width >> height;
                             cropImage(image, x, y, width, height);
                             break;
+#pragma endregion
+#pragma region Add Frame
                         case 9:
                             int frame_choice, thickness;
                             int color[3];
+                            int minorColor[3];
+
                             cout << "Enter the thickness of the frame: ";
                             cin >> thickness;
-                            cout << "Enter the color: \n"
-                                    "1) red\n"
-                                    "2) blue\n"
-                                    "3) green\n"
-                                    "4) ";
+                            ChooseColor(color);
+
                             cout << "Do you want: \n"
                                     "1) Basic frame\n"
                                     "2) Fancy frame\n"
@@ -202,13 +219,30 @@ void Menu(){
                             cin >> frame_choice;
                             switch (frame_choice) {
                                 case 1:
-                                    AddBasicFrame(image, thickness, color);
+                                    AddBasicFrame(image, thickness, color, 0, 0);
+                                    break;
+
+                                case 2:
+                                    ChooseColor(minorColor);
+                                    AddFancyFrame(image, thickness, color, minorColor);
+                                    break;
+                                case 3:
+                                    ChooseColor(minorColor);
+                                    AddLinedFrame(image, thickness, color, minorColor);
+
+                                default:
+                                    cout << "Invalid filter choice! Please try again.\n";
                                     break;
                             }
+
                             break;
+#pragma endregion
+#pragma  region Detect Edge
                         case 10:
                             detect_edge(image);
                             break;
+#pragma endregion
+#pragma region Resize
                         case 11:
                             int new_width, new_height;
                             cout << "Enter the new width: ";
@@ -218,6 +252,8 @@ void Menu(){
                             cin >> new_height;
                             Resize(image, new_width, new_height);
                             break;
+#pragma endregion
+#pragma region Blur
                         case 12:
                             int blur_radius;
                             cout << "Enter the radius: ";
@@ -229,9 +265,13 @@ void Menu(){
                             }
                             BlurFilter(image, blur_radius);
                             break;
+#pragma endregion
+#pragma region Sunlight
                         case 13:
                             sunlight_filter(image);
                             break;
+#pragma endregion
+#pragma region Oil
                         case 14:
                             int radius, intensity_level;
                             cout << "Enter the radius: ";
@@ -250,6 +290,8 @@ void Menu(){
 
                             Oil(image, radius, intensity_level);
                             break;
+#pragma endregion
+#pragma region Noise
                         case 15:
                             float power;
                             cout << "Enter the power of the noise: ";
@@ -260,12 +302,18 @@ void Menu(){
                             }
                             Noise(image, power);
                             break;
+#pragma endregion
+#pragma region Purple
                         case 16:
                             purple_filter(image);
                             break;
+#pragma endregion
+#pragma region Infrared
                         case 17:
                             infrared_filter(image);
                             break;
+#pragma endregion
+#pragma region Skew
                         case 18:
                             float skew_angle;
                             cout << "Enter the skew angle: ";
@@ -277,6 +325,8 @@ void Menu(){
                             }
                             Skew(image, skew_angle);
                             break;
+#pragma endregion
+#pragma region Bloom
                         case 19:
                             double intensity;
                             int threshold;
@@ -291,6 +341,8 @@ void Menu(){
                             }
                             Bloom(image, intensity, threshold);
                             break;
+#pragma endregion
+#pragma region Gamma
                         case 20:
                             double gamma;
                             cout << "Enter the gamma value: ";
@@ -302,6 +354,7 @@ void Menu(){
                             }
                             GammaFilter(image, gamma);
                             break;
+#pragma endregion
                         default:
                             cout << "Invalid filter choice! Please try again.\n";
                             continue;
@@ -320,7 +373,6 @@ void Menu(){
                         }
                         break;
                     }
-
 
                     if (save_choice == 1) {
                         while (true) {
@@ -480,7 +532,6 @@ void ChangeImageData(Image& actual, Image& newImage){
         }
     }
 }
-
 double StandardDeviation(Image& image){
 
     double sum = 0;
@@ -503,7 +554,6 @@ double StandardDeviation(Image& image){
     return sqrt(sum / ((image.width*image.height)-1));
 
 }
-
 double Mean(Image& image){
 
     int avg = 0;
@@ -524,7 +574,6 @@ double Mean(Image& image){
 
     return avg / (image.width*image.height);
 }
-
 void MakeCircle(int** matrix, int radius){
     for (int i = 0; i <= radius*2; i++) {
         for (int j = 0; j <= radius*2; j++) {
@@ -533,6 +582,69 @@ void MakeCircle(int** matrix, int radius){
             }
         }
     }
+}
+void ChooseColor(int color[]){
+
+    color[0] = 40;
+    color[1] = 40;
+    color[2] = 40;
+
+    int colorChoice;
+
+    while(true){
+
+        cout << "Enter the color: \n"
+                "1) red\n"
+                "2) green\n"
+                "3) blue\n"
+                "4) yellow\n"
+                "5) purple\n"
+                "6) orange\n"
+                "7) white\n"
+                "8) black\n";
+
+        cin >> colorChoice;
+
+        if (!cin){
+            cout << "Invalid Input" << endl;
+            cin.clear();
+            cin.ignore();
+            continue;
+        }
+
+        if (colorChoice == 1)
+            color[0] += 200;
+        else if (colorChoice == 2)
+            color[1] += 200;
+        else if (colorChoice == 3)
+            color[2] += 200;
+        else if (colorChoice == 4){
+            color[1] += 200;
+            color[2] += 200;
+        }
+        else if (colorChoice == 5){
+            color[0] += 100;
+            color[2] += 200;
+        }
+        else if (colorChoice == 6){
+            color[0] += 200;
+            color[1] += 100;
+        }
+        else if (colorChoice == 7)
+            for (int i = 0; i < 3; i++)
+                color[i] = 255;
+
+        else if (colorChoice == 8)
+            for (int i = 0; i < 3; i++)
+                color[i] = 0;
+
+        else{
+            cout << "Invalid Choice" << endl;
+            continue;
+        }
+        break;
+    }
+
 }
 
 void AddBorder(Image& image, int xo, int xf, int yo, int yf, const int color[]){
@@ -560,8 +672,8 @@ void AddLinedFrame(Image& image, int thickness, const int color[], const int min
 
     int whiteOutlineThickness = thickness / 6;
 
-    AddBasicFrame(image, whiteOutlineThickness, minorColor, thickness, thickness);
-    AddBasicFrame(image, whiteOutlineThickness, minorColor, thickness*1.5, thickness*1.5);
+    AddBasicFrame(image, whiteOutlineThickness, minorColor);
+    AddBasicFrame(image, whiteOutlineThickness, minorColor);
 
 }
 void DrawMatrix(Image& image, int** matrix, int rows, int cols, int thickness, const int color[], int xo = 0, int yo = 0){
@@ -594,8 +706,8 @@ void DrawFancyFrame(Image& image, int** matrix, int rows, int cols, int thicknes
 }
 void AddFancyFrame(Image& image, int thickness, const int color[], const int minorColor[]){
     AddBasicFrame(image, thickness, color);
-    AddBasicFrame(image, thickness/6, minorColor, thickness*1.5, thickness*1.5);
-    AddBasicFrame(image, thickness/8, minorColor, thickness/2, thickness/2);
+    AddBasicFrame(image, thickness / 6, minorColor);
+    AddBasicFrame(image, thickness / 8, minorColor);
 
     int** square = new int*[2];
     square[0] = new int[] {1,1};
