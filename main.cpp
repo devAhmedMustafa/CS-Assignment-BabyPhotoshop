@@ -16,7 +16,7 @@ double StandardDeviation(Image& );
 double Mean(Image& );
 void ChangeImageData(Image& actual, Image& newImage);
 void MakeCircle(int**, int);
-void ChooseColor(int arr[]);
+void ChooseColor(int color[]);
 
 void InvertFilter(Image& image);
 void Rotate(Image& image, int angle);
