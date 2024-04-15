@@ -761,9 +761,13 @@ void Bloom(Image& image, double intensity, int threshold){
 
         cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void Noise(Image& image, float power){
+
+    int full = image.width*image.height;
+    float current = 0;
 
     double mean;
     double stddev;
@@ -782,11 +786,18 @@ void Noise(Image& image, float power){
                 noise = max(0, min(255, noise));
                 image(i, j, k) = noise;
             }
+
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void Oil(Image& image, const int rad, int intensityLevels){
+
+    int full = image.width*image.height;
+    float current = 0;
 
     int sumR[256] = {0};
     int sumG[256] = {0};
@@ -837,8 +848,12 @@ void Oil(Image& image, const int rad, int intensityLevels){
                 sumG[nI] = 0;
                 sumB[nI] = 0;
             }
+
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void AddFrame(Image& image, Image& frame, int color[]){
@@ -890,6 +905,9 @@ void AddFrame(Image& image, Image& frame, int color[]){
 
 void BlurFilter(Image& image, int r){
 
+    int full = image.width*image.height;
+    float current = 0;
+
     int area = pow(2*r+1, 2);
 
     for (int i = r; i < image.width-r; i++){
@@ -906,11 +924,18 @@ void BlurFilter(Image& image, int r){
 
                 image(i, j, k) = ceil(sum / area);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void Resize(Image& originalImage, int newWidth, int newHeight){
+
+    int full = originalImage.width*originalImage.height;
+    float current = 0;
+
     if (newWidth <= 0 || newHeight <= 0) {
         cout << "Error: New dimensions must be positive.\n";
         return;
@@ -929,13 +954,19 @@ void Resize(Image& originalImage, int newWidth, int newHeight){
 
                 resizedImage->setPixel(i, j, k, originalImage.getPixel(originalX, originalY, k));
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 
     originalImage = *resizedImage;
 }
 
 void InvertFilter(Image& image){
+
+    int full = image.width*image.height;
+    float current = 0;
 
     for (int i = 0; i < image.width; ++i){
         for (int j = 0; j < image.height; ++j){
@@ -944,12 +975,20 @@ void InvertFilter(Image& image){
 
                 image(i, j, k) = 255 - image(i, j, k);
             }
+            current++;
+
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+
+    cout << endl;
 
 }
 
 void Rotate(Image& image, int angle){
+
+    int full = image.width*image.height;
+    float current = 0;
 
     if (angle == 0)
         return;
@@ -976,14 +1015,19 @@ void Rotate(Image& image, int angle){
 
                 rotated(changeDim?j:i, changeDim?i:j, k) = image(row, col, k);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 
     ChangeImageData(image, rotated);
 
 }
 
 void grayScale_filter(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             unsigned int average = 0;
@@ -994,11 +1038,16 @@ void grayScale_filter(Image& image){
             for (int k = 0; k < 3; ++k) {
                 image(i,j,k) = average;
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 }
 
 void verticalFlip(Image& image) {
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i)
     {
         for (int j = 0; j < image.height / 2; ++j)
@@ -1009,11 +1058,16 @@ void verticalFlip(Image& image) {
                 image.setPixel(i, j, k, image.getPixel(i, image.height - 1 - j, k));
                 image.setPixel(i, image.height - 1 - j, k, temp);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void horizontalFlip(Image& image) {
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width / 2; ++i)
     {
         for (int j = 0; j < image.height; ++j)
@@ -1024,11 +1078,16 @@ void horizontalFlip(Image& image) {
                 image.setPixel(i, j, k, image.getPixel(image.width - 1 - i, j, k));
                 image.setPixel(image.width - 1 - i, j, k, temp);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void Black_and_White(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for(int i = 0; i < image.width; ++i)
     {
         for(int j = 0; j < image.height; ++j)
@@ -1049,32 +1108,46 @@ void Black_and_White(Image& image){
                 image.setPixel(i, j, 1, 0);
                 image.setPixel(i, j, 2, 0);
             }
+            current ++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void brighten_filter(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             for (int k = 0; k < 3; ++k) {
                 image(i,j,k) = min(image(i,j,k)*1.5,255.0);
 
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 }
 
 void darken_filter(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             for (int k = 0; k < 3; ++k) {
                 image(i,j,k) *= 0.5;
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 }
 
 void merge_intersection(Image& image1, Image& image2){
+
     int width1 = image1.width , height1 = image1.height;
     int width2 = image2.width , height2 = image2.height;
 
@@ -1092,14 +1165,20 @@ void merge_intersection(Image& image1, Image& image2){
     image1.width = width1;
     image1.height = height1;
 
+    int full = image1.width*image1.height;
+    float current = 0;
+
     for (int i = 0; i < image1.width; ++i) {
         for (int j = 0; j < image1.height; ++j) {
             for (int k = 0; k < 3; ++k) {
 
                 image1(i,j,k) = (image1(i,j,k)+image2(i,j,k))/2;
             }
+            current ++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout <<endl;
 }
 
 void merge_resize(Image& image1, Image& image2){
@@ -1117,16 +1196,24 @@ void merge_resize(Image& image1, Image& image2){
     Resize(image1, width1, height1);
     Resize(image2, width1, height1);
 
+    int full = image1.width*image2.height;
+    float current = 0;
+
     for (int i = 0; i < image1.width; ++i) {
         for (int j = 0; j < image1.height; ++j) {
             for (int k = 0; k < 3; ++k) {
                 image1(i,j,k) = min(255, (image1(i,j,k)+image2(i,j,k))/2);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 }
 
 void sunlight_filter(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             for (int k = 0; k < 3; ++k) {
@@ -1134,8 +1221,11 @@ void sunlight_filter(Image& image){
             }
             image(i, j, 0) = min(image(i, j, 0) + 55.0, 255.0);
             image(i, j, 1) = min(image(i, j, 1) + 50.0, 255.0);
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 }
 
 void cropImage(Image& originalImage, int x, int y, int width, int height) {
@@ -1144,19 +1234,26 @@ void cropImage(Image& originalImage, int x, int y, int width, int height) {
         return;
     }
 
+    int full = width*height;
+    float current = 0;
+
     Image croppedImage(width, height);
     for (int i = 0; i < width; ++i) {
         for (int j = 0; j < height; ++j) {
             for (int k = 0; k < 3; ++k) {
                 croppedImage.setPixel(i, j, k, originalImage.getPixel(x + i, y + j, k));
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 
     ChangeImageData(originalImage, croppedImage);
 }
 
 void detect_edge(Image& image) {
+
     int horizontal[3][3] = {{-1, 0,1},
                             {-2, 0, 2},
                             {-1, 0, 1}};
@@ -1217,6 +1314,8 @@ void detect_edge(Image& image) {
 }
 
 void infrared_filter(Image& image){
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
 
@@ -1225,11 +1324,17 @@ void infrared_filter(Image& image){
             image(i, j, 2) = 255 - image(i, j, 2);
             image(i, j, 1) = 255 - image(i, j, 1);
 
+            current ++;
+
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout<<endl;
 }
 
 void GammaFilter(Image& image, double gamma) {
+    int full = image.width*image.height;
+    float current = 0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             for (int k = 0; k < 3; ++k) {
@@ -1237,18 +1342,26 @@ void GammaFilter(Image& image, double gamma) {
                 color = pow(color, gamma);
                 image(i, j, k) = static_cast<int>(color * 255);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout <<endl;
 }
 
 void purple_filter(Image& image){
+    int full = image.width*image.height;
+    float current=0;
     for (int i = 0; i < image.width; ++i) {
         for (int j = 0; j < image.height; ++j) {
             image(i, j, 0) = min(image(i, j, 0) * 1.141, 255.0);
             image(i, j, 2) = min(image(i, j, 2) * 1.26, 255.0);
             image(i, j, 1) = min(image(i, j, 1) * 0.805, 255.0);
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout <<endl;
 }
 
 void Skew(Image& image, float angle){
@@ -1258,6 +1371,9 @@ void Skew(Image& image, float angle){
     int newHeight = image.height * cos(angle);
     Image* skewedImage = new Image(newWidth, newHeight);
 
+    int full = newWidth*newHeight;
+    float current = 0;
+
     for (int i = 0; i < image.width; i++){
         for (int j = 0; j < image.height; j++){
             for (int k = 0; k < 3; k++){
@@ -1265,8 +1381,11 @@ void Skew(Image& image, float angle){
                 int pi = i + (j)*sin(angle);
                 skewedImage->getPixel(pi, newHeight-pj-1, k) = image.getPixel(i, image.height-j-1, k);
             }
+            current++;
         }
+        cout <<"\r" << (int)(current/full*100) << "%";
     }
+    cout << endl;
 
     image = *skewedImage;
 }
