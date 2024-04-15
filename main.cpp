@@ -35,7 +35,8 @@ void DrawFancyFrame(Image&, int**, int, int, const int[], int, int);
 void AddBasicFrame(Image&, int , const int [], int , int);
 void AddLinedFrame(Image&, int, const int[], const int[]);
 void AddFancyFrame(Image&, int, const int[], const int[]);
-void merge_filter(Image& image1, Image& image2);
+void merge_intersection(Image& image1, Image& image2);
+void merge_resize(Image& image1, Image& image2);
 void darken_filter(Image& image);
 void brighten_filter(Image& image);
 void sunlight_filter(Image& image);
@@ -108,8 +109,7 @@ void Menu(){
 
                                 }
                             }
-
-                            merge_filter(image, image2);
+                            merge_resize(image, image2);
                             break;
                         case 5:
                             cout << "1) Horizontal flip\n"
@@ -404,10 +404,10 @@ void Menu(){
 
 int main() {
 
-    //Menu();
-    Image image("sukuna.jpg");
-    Skew(image, 60);
-    image.saveImage("skewed.png");
+    Menu();
+//    Image image("sukuna.jpg");
+//    Skew(image, 60);
+//    image.saveImage("skewed.png");
     return 0;
 
 }
@@ -748,7 +748,7 @@ void Resize(Image& originalImage, int newWidth, int newHeight){
         return;
     }
 
-    Image resizedImage(newWidth, newHeight);
+    Image* resizedImage = new Image(newWidth, newHeight);
 
     double widthRatio = static_cast<double>(originalImage.width) / newWidth;
     double heightRatio = static_cast<double>(originalImage.height) / newHeight;
@@ -759,12 +759,12 @@ void Resize(Image& originalImage, int newWidth, int newHeight){
                 int originalX = static_cast<int>(i * widthRatio);
                 int originalY = static_cast<int>(j * heightRatio);
 
-                resizedImage.setPixel(i, j, k, originalImage.getPixel(originalX, originalY, k));
+                resizedImage->setPixel(i, j, k, originalImage.getPixel(originalX, originalY, k));
             }
         }
     }
 
-    ChangeImageData(originalImage, resizedImage);
+    originalImage = *resizedImage;
 }
 
 void InvertFilter(Image& image){
@@ -906,7 +906,7 @@ void darken_filter(Image& image){
     }
 }
 
-void merge_filter(Image& image1, Image& image2){
+void merge_intersection(Image& image1, Image& image2){
     int width1 = image1.width , height1 = image1.height;
     int width2 = image2.width , height2 = image2.height;
 
@@ -929,6 +929,30 @@ void merge_filter(Image& image1, Image& image2){
             for (int k = 0; k < 3; ++k) {
 
                 image1(i,j,k) = (image1(i,j,k)+image2(i,j,k))/2;
+            }
+        }
+    }
+}
+
+void merge_resize(Image& image1, Image& image2){
+    int width1 = image1.width , height1 = image1.height;
+    int width2 = image2.width , height2 = image2.height;
+
+
+    if (height1 != height2){
+        height1 = max(height1,height2);
+    }
+    if (width1 != width2){
+        width1 = max(width1,width2);
+    }
+
+    Resize(image1, width1, height1);
+    Resize(image2, width1, height1);
+
+    for (int i = 0; i < image1.width; ++i) {
+        for (int j = 0; j < image1.height; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                image1(i,j,k) = min(255, (image1(i,j,k)+image2(i,j,k))/2);
             }
         }
     }
