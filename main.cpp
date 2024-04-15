@@ -28,7 +28,7 @@ void AddFrame(Image& , Image& , int []);
 void Resize(Image&, int, int);
 void Noise(Image&, float power);
 void Oil(Image&,int, int);
-void Bloom(Image& , double, double);
+void Bloom(Image& , double, int);
 void AddBorder(Image&, int , int , int , int, const int[]);
 void DrawMatrix(Image&, int**, int, int, int, const int [], int, int);
 void DrawFancyFrame(Image&, int**, int, int, const int[], int, int);
@@ -109,7 +109,19 @@ void Menu(){
 
                                 }
                             }
-                            merge_resize(image, image2);
+                            int merge_options;
+                            cout << "Do you want to: \n"
+                                    "1) Merge the intersection area\n"
+                                    "2) Resize the two photos on the bigger dimensions\n";
+                            cin >> merge_options;
+                            switch (merge_options) {
+                                case 1:
+                                    merge_intersection(image, image2);
+                                    break;
+                                case 2:
+                                    merge_resize(image, image2);
+                                    break;
+                            }
                             break;
                         case 5:
                             cout << "1) Horizontal flip\n"
@@ -174,7 +186,25 @@ void Menu(){
                             cropImage(image, x, y, width, height);
                             break;
                         case 9:
-                            //add a frame
+                            int frame_choice, thickness;
+                            int color[3];
+                            cout << "Enter the thickness of the frame: ";
+                            cin >> thickness;
+                            cout << "Enter the color: \n"
+                                    "1) red\n"
+                                    "2) blue\n"
+                                    "3) green\n"
+                                    "4) ";
+                            cout << "Do you want: \n"
+                                    "1) Basic frame\n"
+                                    "2) Fancy frame\n"
+                                    "3) Lined frame\n";
+                            cin >> frame_choice;
+                            switch (frame_choice) {
+                                case 1:
+                                    AddBasicFrame(image, thickness, color);
+                                    break;
+                            }
                             break;
                         case 10:
                             detect_edge(image);
@@ -221,7 +251,14 @@ void Menu(){
                             Oil(image, radius, intensity_level);
                             break;
                         case 15:
-                            //
+                            float power;
+                            cout << "Enter the power of the noise: ";
+                            cin >> power;
+                            while (power < 0){
+                                cout << "Power must be more than 0: ";
+                                cin >> power;
+                            }
+                            Noise(image, power);
                             break;
                         case 16:
                             purple_filter(image);
@@ -230,10 +267,29 @@ void Menu(){
                             infrared_filter(image);
                             break;
                         case 18:
-                            //
+                            float skew_angle;
+                            cout << "Enter the skew angle: ";
+                            cin >> skew_angle;
+                            while(skew_angle > 90 || skew_angle < 0)
+                            {
+                                cout << "Please enter an angle between 0 and 90: ";
+                                cin >> skew_angle;
+                            }
+                            Skew(image, skew_angle);
                             break;
                         case 19:
-                            //
+                            double intensity;
+                            int threshold;
+                            cout << "Enter the intensity (preferred to be from 0 to 2): ";
+                            cin >> intensity;
+                            cout << "Enter the threshold value: ";
+                            cin >> threshold;
+                            while(threshold > 255 || threshold < 0)
+                            {
+                                cout << "Please enter a value between 0 and 255: ";
+                                cin >> threshold;
+                            }
+                            Bloom(image, intensity, threshold);
                             break;
                         case 20:
                             double gamma;
@@ -569,7 +625,7 @@ void AddFancyFrame(Image& image, int thickness, const int color[], const int min
 
 }
 
-void Bloom(Image& image, double intensity, double threshold){
+void Bloom(Image& image, double intensity, int threshold){
 
     int full = image.width*image.height;
     float current = 0;
@@ -1084,7 +1140,7 @@ void purple_filter(Image& image){
 }
 
 void Skew(Image& image, float angle){
-    angle = angle * M_1_PI/180;
+    angle = angle * M_PI/180;
 
     int newWidth = image.width + image.height * sin(angle);
     int newHeight = image.height * cos(angle);
