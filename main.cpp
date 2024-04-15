@@ -5,9 +5,17 @@
 
 //System Diagram: https://drive.google.com/file/d/16WMEV3cS-93c3tAiAGDeK93r_W2lyStY/view?usp=sharing
 
-#include "Filters.h"
-#include "Utilities.h"
+#include "Image_Class.h"
+#include <random>
+#include <cmath>
+#include <iomanip>
+
 using namespace std;
+
+double StandardDeviation(Image& );
+double Mean(Image& );
+void ChangeImageData(Image& actual, Image& newImage);
+void MakeCircle(int**, int);
 
 void InvertFilter(Image& image);
 void Rotate(Image& image, int angle);
@@ -399,8 +407,76 @@ int main() {
     //Menu();
     Image image("sukuna.jpg");
     Skew(image, 60);
+    image.saveImage("skewed.png");
     return 0;
 
+}
+
+void ChangeImageData(Image& actual, Image& newImage){
+    actual.width = newImage.width;
+    actual.height = newImage.height;
+
+    for (int i = 0; i < actual.width; i++){
+        for (int j = 0; j < actual.height; j++){
+            for (int k = 0; k < 3; k++){
+                actual.setPixel(i, j, k, newImage(i, j, k));
+            }
+        }
+    }
+}
+
+double StandardDeviation(Image& image){
+
+    double sum = 0;
+    double mean = Mean(image);
+
+    for (int i = 0; i < image.width; i++){
+        for (int j = 0; j < image.height; j++) {
+            float avg = 0;
+
+            for (int k = 0; k < 3; k++){
+                avg += image(i, j, k);
+            }
+
+            avg /= 3;
+
+            sum += pow(((float) avg - mean), 2);
+        }
+    }
+
+    return sqrt(sum / ((image.width*image.height)-1));
+
+}
+
+double Mean(Image& image){
+
+    int avg = 0;
+
+    for (int i = 0; i < image.width; i++){
+        for (int j = 0; j < image.height; j++){
+            float avgC = 0;
+
+            for (int k = 0; k < 3; k++){
+                avgC += image(i, j, k);
+            }
+
+            avgC /= 3;
+
+            avg += avg;
+        }
+    }
+
+    return avg / (image.width*image.height);
+}
+
+void MakeCircle(int** matrix, int radius){
+    for (int i = 0; i <= radius*2; i++) {
+        for (int j = 0; j <= radius*2; j++) {
+            if (round(sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius))) == radius) {
+                matrix[i][j] = 1;
+            }
+        }
+    }
 }
 
 void AddBorder(Image& image, int xo, int xf, int yo, int yf, const int color[]){
@@ -988,19 +1064,19 @@ void Skew(Image& image, float angle){
 
     int newWidth = image.width + image.height * sin(angle);
     int newHeight = image.height * cos(angle);
-    Image skewedImage(newWidth, newHeight);
+    Image* skewedImage = new Image(newWidth, newHeight);
 
     for (int i = 0; i < image.width; i++){
         for (int j = 0; j < image.height; j++){
             for (int k = 0; k < 3; k++){
                 int pj = (j) * cos(angle);
                 int pi = i + (j)*sin(angle);
-                skewedImage(pi, newHeight-pj-1, k) = image(i, image.height-j-1, k);
+                skewedImage->getPixel(pi, newHeight-pj-1, k) = image.getPixel(i, image.height-j-1, k);
             }
         }
     }
 
-    ChangeImageData(image, skewedImage);
+    image = *skewedImage;
 }
 
 void filters_menu(){
