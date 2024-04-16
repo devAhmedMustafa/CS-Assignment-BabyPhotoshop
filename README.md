@@ -55,4 +55,3 @@ ___
 
 ### Sources :
 1. #### Google Drive link for videos of new 2 filters:     https://drive.google.com/drive/folders/1qAbu3M0497vEp9O42b9CVE_qcn9SliBV
-            (Bloom & Gamma Filter)
