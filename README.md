@@ -36,11 +36,11 @@ ___
 1. #### Gamma
    • For each pixel in the image:
 
-      • Normalize the color intensity by dividing it by 255.0.
-
-      • Apply gamma correction to the normalized color intensity using the formula: color = pow(color, gamma).
-
-      • Scale the corrected color intensity back to the range [0, 255] and assign it to the pixel.
+         • Normalize the color intensity by dividing it by 255.0.
+   
+         • Apply gamma correction to the normalized color intensity using the formula: color = pow(color, gamma).
+   
+         • Scale the corrected color intensity back to the range [0, 255] and assign it to the pixel.
 
 
 2. #### Bloom
