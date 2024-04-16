@@ -9,25 +9,25 @@ ___
 
 ### **Filters**
 1. Grayscale
-2. Invert
-3. Rotate
-4. Flip
-5. Black And White
-6. Blur
-7. Add Frame
-8. Resize
-9. Noise
-10. Oil
-11. Bloom
-12. Merge 
-13. Darken & Brighten 
-14. Sunlight 
-15. Crop 
-16. Detect 
+2. Black And White
+3. Invert
+4. Merge
+5. Flip
+6. Rotate
+7. Darken & Brighten 
+8. Crop
+9. Add a frame
+10. Detect image edges
+11. Resize
+12. Blur 
+13. Sunlight
+14. Oil painting
+15. Old TV 
+16. Purple 
 17. Infrared 
-18. Gamma 
-19. Purple 
-20. Skew
+18. Skew 
+19. Bloom 
+20. Gamma
 
 ___
 
