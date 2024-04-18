@@ -1,6 +1,6 @@
 //Program: Baby Photoshop program
 //Authors:  Malak Amr Ahmed Saleh - ID: 20230416 - S22 ---> GrayScale filter - Merge - Darken and Lighten - Detect edges - Infrared filter - Purple filter - Sunlight - Menu
-//          Ibrahim Reda Mohamed Morsy - ID: 20230597 - S22 ---> Black and White filter - Horizontal and vertical flip filter - Crop filter - Resize filterm - Skew filter - Gamma filter (Bonus)
+//          Ibrahim Reda Mohamed Morsy - ID: 20230597 - S22 ---> Black and White filter - Horizontal and vertical flip filter - Crop filter - Resize filter - Skew filter - Gamma filter (Bonus)
 //          Ahmed Mustafa EL-Sheikh Talaat - ID: 20230636 - S22 ---> Invert filter - Rotate filter - Adding a frame - Blur filter - Noise filter - Oil painting - Bloom filter (Bonus)
 
 //System Diagram: https://drive.google.com/file/d/16WMEV3cS-93c3tAiAGDeK93r_W2lyStY/view?usp=sharing
@@ -513,9 +513,6 @@ void Menu(){
 int main() {
 
     Menu();
-//    Image image("sukuna.jpg");
-//    Skew(image, 60);
-//    image.saveImage("skewed.png");
     return 0;
 
 }

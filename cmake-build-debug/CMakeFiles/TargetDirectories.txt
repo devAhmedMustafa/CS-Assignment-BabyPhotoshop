@@ -1,3 +1,3 @@
-C:/Users/Dell/OneDrive - Faculty of Engineering Ain Shams University/Desktop/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/BabyPhotoshop.dir
-C:/Users/Dell/OneDrive - Faculty of Engineering Ain Shams University/Desktop/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Dell/OneDrive - Faculty of Engineering Ain Shams University/Desktop/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/FCAI - CU/Second term/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/BabyPhotoshop.dir
+D:/FCAI - CU/Second term/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/FCAI - CU/Second term/CS-Assignment-BabyPhotoshop/cmake-build-debug/CMakeFiles/rebuild_cache.dir
